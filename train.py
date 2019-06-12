@@ -47,7 +47,10 @@ def parse_args():
     parser.add_argument('--weight-decay', type=float, default=1e-4,
                         metavar='M', help='w-decay (default: 1e-4)')
     # checking point
-    parser.add_argument('--resume', type=str, default=None,
+    #parser.add_argument('--resume', type=str, default=None,
+    #                    help='put the path to resuming file if needed')
+
+    parser.add_argument('--resume', type=str, default='./weights/fast_scnn_citys.pth',
                         help='put the path to resuming file if needed')
     parser.add_argument('--save-folder', default='./weights',
                         help='Directory for saving checkpoint models')
