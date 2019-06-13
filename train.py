@@ -100,6 +100,7 @@ class Trainer(object):
                 name, ext = os.path.splitext(args.resume)
                 assert ext == '.pkl' or '.pth', 'Sorry only .pth and .pkl files supported.'
                 print('Resuming training, loading {}...'.format(args.resume))
+                self.model=torch.nn.DataParallel(self.model)
                 self.model.load_state_dict(torch.load(args.resume, map_location=lambda storage, loc: storage))
 
         # create criterion
