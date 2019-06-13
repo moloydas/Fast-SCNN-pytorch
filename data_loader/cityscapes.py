@@ -70,7 +70,8 @@ class CitySegmentation(data.Dataset):
     def _class_to_index(self, mask):
         values = np.unique(mask)
         for value in values:
-            assert (value in self._mapping)
+            #assert (value in self._mapping)
+            assert(value in self._key)
         index = np.digitize(mask.ravel(), self._mapping, right=True)
         return self._key[index].reshape(mask.shape)
 
