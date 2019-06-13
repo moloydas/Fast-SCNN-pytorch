@@ -92,7 +92,7 @@ class Trainer(object):
         self.model = get_fast_scnn(dataset=args.dataset, aux=args.aux)
         if torch.cuda.device_count() > 1:
             self.model = torch.nn.DataParallel(self.model, device_ids=[0, 1, 2,3])
-        print(torch.cuda.device_count)
+        print(torch.cuda.device_count())
         self.model.to(args.device)
 
         # resume checkpoint if needed
@@ -101,7 +101,8 @@ class Trainer(object):
                 name, ext = os.path.splitext(args.resume)
                 assert ext == '.pkl' or '.pth', 'Sorry only .pth and .pkl files supported.'
                 print('Resuming training, loading {}...'.format(args.resume))
-                self.model.load_state_dict(torch.load(args.resume, map_location=lambda storage, loc: storage))
+                #self.model.load_state_dict(torch.load(args.resume, map_location=lambda storage, loc: storage))
+                self.model.load_state_dict(torch.load(args.resume))
 
         # create criterion
         self.criterion = MixSoftmaxCrossEntropyOHEMLoss(aux=args.aux, aux_weight=args.aux_weight,
