@@ -101,8 +101,8 @@ class Trainer(object):
                 name, ext = os.path.splitext(args.resume)
                 assert ext == '.pkl' or '.pth', 'Sorry only .pth and .pkl files supported.'
                 print('Resuming training, loading {}...'.format(args.resume))
-                #self.model.load_state_dict(torch.load(args.resume, map_location=lambda storage, loc: storage))
-                self.model.load_state_dict(torch.load(args.resume))
+                self.model.load_state_dict(torch.load(args.resume, map_location=lambda storage, loc: storage))
+                #self.model.load_state_dict(torch.load(args.resume))
 
         # create criterion
         self.criterion = MixSoftmaxCrossEntropyOHEMLoss(aux=args.aux, aux_weight=args.aux_weight,
