@@ -72,7 +72,8 @@ class CitySegmentation(data.Dataset):
         for value in values:
             #assert (value in self._mapping)
             assert(value in self._key)
-        index = np.digitize(mask.ravel(), self._mapping, right=True)
+        #index = np.digitize(mask.ravel(), self._mapping, right=True)
+        index = np.digitize(mask.ravel(), sorted(self._key), right=True)
         return self._key[index].reshape(mask.shape)
 
     def __getitem__(self, index):
