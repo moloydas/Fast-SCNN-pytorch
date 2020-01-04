@@ -141,7 +141,9 @@ class ImageCVBridge(object):
 
     def do_work(self):
         r=rospy.Rate(20)
-
+        cv2.namedWindow("Original", cv2.WINDOW_NORMAL)
+        cv2.namedWindow("Maskop", cv2.WINDOW_NORMAL)
+        cv2.namedWindow("Overlay", cv2.WINDOW_NORMAL)
         while not rospy.is_shutdown():
             start_time=time.time()
             self.demo()
