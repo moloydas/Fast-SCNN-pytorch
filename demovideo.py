@@ -63,46 +63,28 @@ class ImageCVBridge(object):
     
         self.mtx=np.array([[709.103066,0.000000,621.543559],[0.000000 ,709.978057 ,333.677376],[0.000000 ,0.000000, 1.000000]])
 
-        print(self.mtx.shape)
-
         self.dist=np.array([-0.163186 ,0.026619 ,0.000410 ,0.000569 ,0.000000])
-
-        rospy.sleep(4)
-
 
     def imgcallback(self,data):
         self.image_data=data
 
     def demo(self):
-        
-        # output folder
-        #if not os.path.exists(args.outdir):
-            #os.makedirs(args.outdir)
-    
+
         # image transform
         img=self.bridge.imgmsg_to_cv2(self.image_data,"bgr8")
 
         img=cv2.undistort(img,self.mtx,self.dist,None,self.mtx)
-
         
         img=cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
         img=cv2.resize(img,(2048,1024))
-    
+
         image=Imag.fromarray(img)
-        #image = Image.open(args.input_pic).convert('RGB')
         image = self.transform(image).unsqueeze(0).to(self.device)
-        
-        
-        
-        #model.eval()
-        
+
         with torch.no_grad():
             outputs = self.model(image)
         
-        
         pred = torch.argmax(outputs[0], 1).squeeze(0).cpu().data.numpy()
-        
-        
         mask = get_color_pallete(pred, args.dataset)
         output=np.array(mask)
 
@@ -116,7 +98,6 @@ class ImageCVBridge(object):
 
 
         #output=np.stack((output,output,output),axis=-1)
-
         output_ol=0.5*img[:,:,2]+0.5*output 
         img_ov = img
         img_ov[:,:,2] = output_ol
@@ -150,11 +131,6 @@ class ImageCVBridge(object):
             r.sleep()
             end_time=time.time()
             print("Run time:",(end_time-start_time))
-
-
-        
-
-
 
 if __name__ == '__main__':
     rospy.init_node("image_extractor")
