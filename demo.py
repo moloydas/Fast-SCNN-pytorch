@@ -13,7 +13,7 @@ parser.add_argument('--model', type=str, default='fast_scnn',
                     help='model name (default: fast_scnn)')
 parser.add_argument('--dataset', type=str, default='citys',
                     help='dataset name (default: citys)')
-parser.add_argument('--weights-folder', default='./weights',
+parser.add_argument('--weights-folder', default='./weights_new',
                     help='Directory for saving checkpoint models')
 parser.add_argument('--input-pic', type=str,
                     default='./datasets/citys/leftImg8bit/test/berlin/berlin_000000_000019_leftImg8bit.png',
@@ -39,8 +39,10 @@ def demo():
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
     ])
     image = Image.open(args.input_pic).convert('RGB')
+    image=image.resize((2048,1024))
     image = transform(image).unsqueeze(0).to(device)
     model = get_fast_scnn(args.dataset, pretrained=True, root=args.weights_folder, map_cpu=args.cpu).to(device)
+    #model=torch.nn.DataParallel(model,device_ids=[0])
     print('Finished loading model!')
     model.eval()
     with torch.no_grad():

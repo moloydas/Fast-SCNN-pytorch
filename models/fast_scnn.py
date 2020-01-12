@@ -243,10 +243,12 @@ def get_fast_scnn(dataset='citys', pretrained=False, root='./weights', map_cpu=F
     }
     from data_loader import datasets
     model = FastSCNN(datasets[dataset].NUM_CLASS, **kwargs)
+    model=nn.DataParallel(model,device_ids=[0])
     if pretrained:
         if(map_cpu):
             model.load_state_dict(torch.load(os.path.join(root, 'fast_scnn_%s.pth' % acronyms[dataset]), map_location='cpu'))
         else:
+            model=nn.DataParallel(model,device_ids=[0])
             model.load_state_dict(torch.load(os.path.join(root, 'fast_scnn_%s.pth' % acronyms[dataset])))
     return model
 

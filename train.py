@@ -50,9 +50,9 @@ def parse_args():
     #parser.add_argument('--resume', type=str, default=None,
     #                    help='put the path to resuming file if needed')
 
-    parser.add_argument('--resume', type=str, default='./weights/fast_scnn_citys.pth',
+    parser.add_argument('--resume', type=str, default=None,
                         help='put the path to resuming file if needed')
-    parser.add_argument('--save-folder', default='./weights',
+    parser.add_argument('--save-folder', default='./weights_new',
                         help='Directory for saving checkpoint models')
     # evaluation only
     parser.add_argument('--eval', action='store_true', default=False,
@@ -78,8 +78,12 @@ class Trainer(object):
         ])
         # dataset and dataloader
         data_kwargs = {'transform': input_transform, 'base_size': args.base_size, 'crop_size': args.crop_size}
-        train_dataset = get_segmentation_dataset(args.dataset, split=args.train_split, mode='train', **data_kwargs)
-        val_dataset = get_segmentation_dataset(args.dataset, split='val', mode='val', **data_kwargs)
+        #train_dataset = get_segmentation_dataset(args.dataset, split=args.train_split, mode='train', **data_kwargs)
+        #val_dataset = get_segmentation_dataset(args.dataset, split='val', mode='val', **data_kwargs)
+
+        train_dataset = get_segmentation_dataset(args.dataset, split='./datasets/citys/trainlist2000.txt', mode='train', **data_kwargs)
+        val_dataset = get_segmentation_dataset(args.dataset, split='./datasets/citys/vallist.txt', mode='val', **data_kwargs)
+
         self.train_loader = data.DataLoader(dataset=train_dataset,
                                             batch_size=args.batch_size,
                                             shuffle=True,
@@ -91,7 +95,7 @@ class Trainer(object):
         # create network
         self.model = get_fast_scnn(dataset=args.dataset, aux=args.aux)
         if torch.cuda.device_count() > 1:
-            self.model = torch.nn.DataParallel(self.model, device_ids=[0, 1, 2,3])
+            self.model = torch.nn.DataParallel(self.model, device_ids=[0])
         print(torch.cuda.device_count())
         self.model.to(args.device)
 

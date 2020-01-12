@@ -40,7 +40,7 @@ class CitySegmentation(data.Dataset):
     BASE_DIR = 'cityscapes'
     NUM_CLASS = 19
 
-    def __init__(self, root='./datasets/citys', split='train', mode=None, transform=None,
+    def __init__(self, root='./datasets/citys/', split='train', mode=None, transform=None,
                  base_size=520, crop_size=480, **kwargs):
         super(CitySegmentation, self).__init__()
         self.root = root
@@ -49,7 +49,8 @@ class CitySegmentation(data.Dataset):
         self.transform = transform
         self.base_size = base_size
         self.crop_size = crop_size
-        self.images, self.mask_paths = _get_city_pairs(self.root, self.split)
+        #self.images, self.mask_paths = _get_city_pairs(self.root, self.split)
+        self.images,self.mask_paths=img_reader(self.root,self.split)
         assert (len(self.images) == len(self.mask_paths))
         if len(self.images) == 0:
             raise RuntimeError("Found 0 images in subfolders of: " + self.root + "\n")
@@ -61,19 +62,19 @@ class CitySegmentation(data.Dataset):
         #                      5, -1, 6, 7, 8, 9,
         #                      10, 11, 12, 13, 14, 15,
         #                      -1, -1, 16, 17, 18])
-        self._key = np.array([0,255,255,1,255,9,11,255,12,
-                              17,18,255,13,14,15,255,255,16,255,
-                              255,3,4,255,255,7,6,5,255,255,2,255,
-                              255,8,10,255,255,255,255,255,-1])
+        self._key = np.array([0,-1,-1,1,-1,9,11,-1,12,
+                              17,18,-1,13,14,15,-1,-1,16,-1,
+                              -1,3,4,-1,-1,7,6,5,-1,-1,2,-1,
+                              -1,8,10,-1,-1,-1,-1,-1,-1])
         self._mapping = np.array(range(-1, len(self._key) - 1)).astype('int32')
 
     def _class_to_index(self, mask):
         values = np.unique(mask)
         for value in values:
-            #assert (value in self._mapping)
-            assert(value in self._key)
-        #index = np.digitize(mask.ravel(), self._mapping, right=True)
-        index = np.digitize(mask.ravel(), sorted(self._key), right=True)
+            assert (value in self._mapping)
+            #assert(value in self._key)
+        index = np.digitize(mask.ravel(), self._mapping, right=True)
+        #index = np.digitize(mask.ravel(), sorted(self._key), right=True)
         return self._key[index].reshape(mask.shape)
 
     def __getitem__(self, index):
@@ -213,6 +214,31 @@ def _get_city_pairs(folder, split='train'):
         mask_paths = train_mask_paths + val_mask_paths
     return img_paths, mask_paths
 
+
+def img_reader(data_dir,list_dir):
+
+    f=open(list_dir,'r')
+
+    images_path=[]
+    masks_path=[]
+
+    for line in f:
+        try:
+            image_path,mask_path=line[:-1].split(" ")
+        except ValueError:
+            image_path=mask_path=line.split('\n')
+
+        image_path=os.path.join(data_dir,image_path)
+        mask_path=os.path.join(data_dir,mask_path)
+
+        mask_path=mask_path.strip()
+
+        images_path.append(image_path)
+        masks_path.append(mask_path)
+
+    #print((images_path))
+
+    return images_path,masks_path
 
 if __name__ == '__main__':
     dataset = CitySegmentation()
