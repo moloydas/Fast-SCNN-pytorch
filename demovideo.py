@@ -2,12 +2,16 @@ import os
 import argparse
 import torch
 import time
+import sys
 
 from torchvision import transforms
 from models.fast_scnn import get_fast_scnn
 from PIL import Image as Imag
 from utils.visualize import get_color_pallete
 
+sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages') # in order to import cv2 under python3
+import cv2
+sys.path.append('/opt/ros/kinetic/lib/python2.7/dist-packages') # append back in order to import rospy
 import rospy
 from geometry_msgs.msg import Twist
 import ros
@@ -15,7 +19,6 @@ from multiprocessing import Pool
 from geometry_msgs.msg import Pose2D
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
-import cv2
 import numpy as np
 
 import matplotlib.image as mpimg
