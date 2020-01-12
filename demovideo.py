@@ -89,45 +89,18 @@ class ImageCVBridge(object):
         
         pred = torch.argmax(outputs[0], 1).squeeze(0).cpu().data.numpy()
         mask = get_color_pallete(pred, args.dataset)
-        output=np.array(mask)
+        mask_cv = np.array(mask.convert('RGB'))
 
-        temp = output[:,:]
-
-        output=output-1 
-
-        #output[output==255]=125
-
-        output[output!=255]=0
-
-
-        #output=np.stack((output,output,output),axis=-1)
-        output_ol=0.5*img[:,:,2]+0.5*output 
-        img_ov = img
-        img_ov[:,:,2] = output_ol
-        cv2.imshow('Original',img)
-        cv2.imshow('Maskop',output)
-        cv2.imshow('Overlay',img_ov)
-
+        cv2.imshow('Original',cv2.cvtColor(img,cv2.COLOR_RGB2BGR))
+        cv2.imshow('Maskop',cv2.cvtColor(mask_cv,cv2.COLOR_RGB2BGR))
         cv2.waitKey(1)
 
-        start_time=time.time()
-        #arr=mpimg.imread(output)
-        #print(arr)
-        #pltimg=plt.imshow(mask)
-
-
-        #plt.pause(0.001)
-        #plt.draw()
         end_time=time.time()
-        #print("PlotTime : ",(end_time-start_time))
-        #outname = os.path.splitext(os.path.split(args.input_pic)[-1])[0] + '.png'
-        #mask.save(os.path.join(args.outdir, outname))
 
     def do_work(self):
         r=rospy.Rate(20)
         cv2.namedWindow("Original", cv2.WINDOW_NORMAL)
         cv2.namedWindow("Maskop", cv2.WINDOW_NORMAL)
-        cv2.namedWindow("Overlay", cv2.WINDOW_NORMAL)
         while not rospy.is_shutdown():
             start_time=time.time()
             self.demo()
